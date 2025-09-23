@@ -2,24 +2,13 @@ package main
 
 import "fmt"
 
+func sum(num1 int, num2 int) {
+	sum := num1 + num2
+	fmt.Println(sum)
+}
+
 func main() {
-	a := 2
-	if a >= 18 {
-		fmt.Println("Get married!")
-	} else {
-		fmt.Println("Can't get married!")
-	}
-
-	day := 3
-
-	switch day {
-	case 1:
-		fmt.Println("Monday")
-	case 2:
-		fmt.Println("Tuesday")
-	case 3:
-		fmt.Println("Wednesday")
-	default:
-		fmt.Println("Other day")
-	}
+	a := 10
+	b := 20
+	sum(a, b)
 }
