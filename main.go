@@ -2,27 +2,22 @@ package main
 
 import "fmt"
 
-// Package-level (global) variable
-var globalVar = "আমি global!"
+// Global variable
+var globalVar = "I am global"
 
 func main() {
-    fmt.Println("Global:", globalVar) // Access from main
+    // Local variable
+    localVar := "I am local"
 
-    // Function-level (local) variable
-    localVar := "আমি local!"
-    fmt.Println("Local:", localVar)
+    fmt.Println("Inside main:")
+    fmt.Println(globalVar) // accessible
+    fmt.Println(localVar)  // accessible
 
-    if true {
-        // Block-level variable
-        blockVar := "আমি block-level!"
-        fmt.Println("Inside if block:", blockVar)
-    }
-    // fmt.Println(blockVar) // ❌ Error: undefined: blockVar
+    printSomething()
+}
 
-    // Loop-level variable
-    for i := 0; i < 3; i++ {
-        loopVar := i * 2
-        fmt.Println("LoopVar:", loopVar)
-    }
-    // fmt.Println(loopVar) // ❌ Error: undefined: loopVar
+func printSomething() {
+    fmt.Println("Inside printSomething function:")
+    fmt.Println(globalVar) // accessible
+    // fmt.Println(localVar) // ❌ Error: localVar not accessible here
 }
