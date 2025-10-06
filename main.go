@@ -2,22 +2,20 @@ package main
 
 import "fmt"
 
-// Global variable
-var globalVar = "I am global"
+var (
+	a = 10
+	b = 30
+)
 
-func main() {
-    // Local variable
-    localVar := "I am local"
-
-    fmt.Println("Inside main:")
-    fmt.Println(globalVar) // accessible
-    fmt.Println(localVar)  // accessible
-
-    printSomething()
+func printName(num int) {
+	fmt.Println(num)
 }
 
-func printSomething() {
-    fmt.Println("Inside printSomething function:")
-    fmt.Println(globalVar) // accessible
-    // fmt.Println(localVar) // ❌ Error: localVar not accessible here
+func add(a int, b int) {
+	res := a + b
+	printName(res)
+}
+
+func main() {
+	add(a, b)
 }
