@@ -1,69 +1,53 @@
 package main
 
-// 2.1 Basic Function
+import "fmt"
+
 func add(a int, b int) int {
-    return a + b
+	return a + b
 }
 
-//2.2 Multiple Return Values
-func divide(a, b int) (int, int) {
-    return a / b, a % b
+func main() {
+	result := add(5, 3)
+	fmt.Println(result) // Output: 8
 }
 
-//2.3 Named Return Values
-func getValues() (x int, y int) {
-    x = 10
-    y = 20
-    return
+
+//HOC
+package main
+
+import "fmt"
+
+// higher-order function
+func apply(fn func(int) int, val int) int {
+	return fn(val)
 }
 
-//2.4 Variadic Functions
-func sum(nums ...int) int {
-    total := 0
-    for _, n := range nums {
-        total += n
-    }
-    return total
+// normal function
+func square(x int) int {
+	return x * x
 }
 
-//2.5 Anonymous Functions
-
-multiply := func(a, b int) int {
-    return a * b
+func main() {
+	result := apply(square, 5)
+	fmt.Println(result) // Output: 25
 }
 
-//2.6 Higher-Order Functions
-func apply(f func(int, int) int, a int, b int) int {
-    return f(a, b)
+
+//Exp 2
+package main
+
+import "fmt"
+
+func multiplier(factor int) func(int) int {
+	return func(n int) int {
+		return n * factor
+	}
 }
 
-//2.7 Recursive Functions
-func factorial(n int) int {
-    if n == 0 {
-        return 1
-    }
-    return n * factorial(n-1)
-}
+func main() {
+	double := multiplier(2)
+	triple := multiplier(3)
 
-//2.8 Methods (Function with Receiver)
-type Circle struct {
-    radius float64
+	fmt.Println(double(5)) // Output: 10
+	fmt.Println(triple(5)) // Output: 15
 }
-
-func (c Circle) Area() float64 {
-    return 3.14 * c.radius * c.radius
-}
-
-//2.9 Closures
-counter := 0
-increment := func() int {
-    counter++
-    return counter
-}
-
-//2.10 Deferred Functions
-defer fmt.Println("World")
-fmt.Println("Hello")
-// Output:
-// Hello
-// World
