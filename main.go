@@ -2,38 +2,22 @@ package main
 
 import "fmt"
 
-const a = 10
-
-var p = 10
-
-func outer() func() {
-	money := 100
-	age := 10
-
-	fmt.Println("Age =", age)
-
-	show := func() {
-		money := money + a + p
-		fmt.Println(money)
-	}
-
-	return show
+type User struct {
+	Name string
+	Age  int
 }
 
-func call() {
-	incr1 := outer()
-	incr1()
-	incr1()
-
-	incr2 := outer()
-	incr2()
-	incr2()
+func (user User) printUser() {
+	fmt.Println("User name: ", user.Name)
+	fmt.Println("User age: ", user.Age)
 }
 
 func main() {
-	call()
-}
+	var user1 User
 
-func init() {
-	fmt.Println("====Bank====")
+	user1 = User{
+		Name: "Bayajid",
+		Age:  19,
+	}
+	user1.printUser()
 }
