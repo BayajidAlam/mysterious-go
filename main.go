@@ -2,52 +2,38 @@ package main
 
 import "fmt"
 
-func add(a int, b int) int {
-	return a + b
-}
+const a = 10
 
-func main() {
-	result := add(5, 3)
-	fmt.Println(result) // Output: 8
-}
+var p = 10
 
+func outer() func() {
+	money := 100
+	age := 10
 
-//HOC
-package main
+	fmt.Println("Age =", age)
 
-import "fmt"
-
-// higher-order function
-func apply(fn func(int) int, val int) int {
-	return fn(val)
-}
-
-// normal function
-func square(x int) int {
-	return x * x
-}
-
-func main() {
-	result := apply(square, 5)
-	fmt.Println(result) // Output: 25
-}
-
-
-//Exp 2
-package main
-
-import "fmt"
-
-func multiplier(factor int) func(int) int {
-	return func(n int) int {
-		return n * factor
+	show := func() {
+		money := money + a + p
+		fmt.Println(money)
 	}
+
+	return show
+}
+
+func call() {
+	incr1 := outer()
+	incr1()
+	incr1()
+
+	incr2 := outer()
+	incr2()
+	incr2()
 }
 
 func main() {
-	double := multiplier(2)
-	triple := multiplier(3)
+	call()
+}
 
-	fmt.Println(double(5)) // Output: 10
-	fmt.Println(triple(5)) // Output: 15
+func init() {
+	fmt.Println("====Bank====")
 }
