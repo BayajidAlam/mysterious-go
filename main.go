@@ -2,22 +2,12 @@ package main
 
 import "fmt"
 
-type User struct {
-	Name string
-	Age  int
-}
-
-func (user User) printUser() {
-	fmt.Println("User name: ", user.Name)
-	fmt.Println("User age: ", user.Age)
-}
+var arr = [3]string{"Hello", "World", "World2"}
 
 func main() {
-	var user1 User
-
-	user1 = User{
-		Name: "Bayajid",
-		Age:  19,
-	}
-	user1.printUser()
+	// var arr [2]int
+	// arr[0] = 3
+	// arr[1] = 20
+	arr := [2]int{3, 5}
+	fmt.Println(arr)
 }
