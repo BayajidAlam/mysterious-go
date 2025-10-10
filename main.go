@@ -2,12 +2,14 @@ package main
 
 import "fmt"
 
-var arr = [3]string{"Hello", "World", "World2"}
-
 func main() {
-	// var arr [2]int
-	// arr[0] = 3
-	// arr[1] = 20
-	arr := [2]int{3, 5}
-	fmt.Println(arr)
+    a := 42
+    p := &a
+
+    fmt.Println("a =", a)   
+    fmt.Println("p =", p)   
+    fmt.Println("*p =", *p) 
+
+    *p = 100
+    fmt.Println("a after *p change =", a) 
 }
