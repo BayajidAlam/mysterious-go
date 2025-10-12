@@ -2,14 +2,23 @@ package main
 
 import "fmt"
 
+func a() {
+	i := 0
+
+	defer fmt.Println(i)
+
+	i = i + 1
+
+	return
+}
+
 func main() {
-    a := 42
-    p := &a
+	a()
 
-    fmt.Println("a =", a)   
-    fmt.Println("p =", p)   
-    fmt.Println("*p =", *p) 
+	for i := 0; i < 3; i++ {
+		defer func() {
+			fmt.Println(i)
+		}()
+	}
 
-    *p = 100
-    fmt.Println("a after *p change =", a) 
 }
