@@ -1,24 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
-func a() {
-	i := 0
+func helloHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Hello World")
+}
 
-	defer fmt.Println(i)
-
-	i = i + 1
-
-	return
+func aboutHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Bayajid Alam")
 }
 
 func main() {
-	a()
+	mux := http.NewServeMux()
 
-	for i := 0; i < 3; i++ {
-		defer func() {
-			fmt.Println(i)
-		}()
+	mux.HandleFunc("/hello", helloHandler)
+	mux.HandleFunc("/about", aboutHandler)
+
+	fmt.Println("Server is running on 3000")
+
+	err := http.ListenAndServe(":3000", mux)
+	if err != nil {
+		fmt.Println("Error starting server", err)
 	}
-
 }
