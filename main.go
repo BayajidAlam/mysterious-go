@@ -1,28 +1,64 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello World")
+type Product struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ImageUrl    string `json:"imageUrl"`
 }
 
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Bayajid Alam")
+var ProductList []Product
+
+func getProducts(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Please give me GET request", 400)
+		return
+	}
+
+	encoder := json.NewEncoder(w)
+	encoder.Encode(ProductList)
 }
 
 func main() {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/products", getProducts)
 
-	mux.HandleFunc("/hello", helloHandler)
-	mux.HandleFunc("/about", aboutHandler)
-
-	fmt.Println("Server is running on 3000")
-
+	fmt.Println("Server is running on port 3000")
 	err := http.ListenAndServe(":3000", mux)
 	if err != nil {
-		fmt.Println("Error starting server", err)
+		fmt.Println("Error starting the server: ", err)
 	}
+}
+
+func init() {
+	ProductList = append(ProductList,
+		Product{
+			ID:          1,
+			Title:       "Laptop",
+			Description: "A high performance laptop",
+			ImageUrl:    "https://example.com/laptop.jpg",
+		},
+		Product{
+			ID:          2,
+			Title:       "Smartphone",
+			Description: "Latest model smartphone",
+			ImageUrl:    "https://example.com/smartphone.jpg",
+		},
+		Product{
+			ID:          3,
+			Title:       "Headphones",
+			Description: "Noise cancelling headphones",
+			ImageUrl:    "https://example.com/headphones.jpg",
+		},
+	)
 }
