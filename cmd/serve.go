@@ -2,26 +2,27 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
-
-	"go.mod/global_router"
 	"go.mod/middleware"
+	"net/http"
 )
 
 func Serve() {
 	manager := middleware.NewManager()
-	mux := http.NewServeMux()
-
 	manager.Use(
+		middleware.Preflight,
+		middleware.Cors,
 		middleware.Logger,
-		middleware.Beauty,
 	)
+
+	mux := http.NewServeMux()
+	wrappedMux := manager.WrapMux(
+		mux,
+	)
+
 	initRoutes(mux, manager)
 
 	fmt.Println("Server is running on port 3000")
-
-	globalRouter := global_router.GlobalRouter(mux)
-	err := http.ListenAndServe(":3000", globalRouter)
+	err := http.ListenAndServe(":3000", wrappedMux)
 
 	if err != nil {
 		fmt.Println("Error starting the server: ", err)

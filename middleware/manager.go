@@ -28,14 +28,23 @@ func (mngr *Manager) Use(middlewares ...Middleware) {
 
 func (mngr *Manager) With(handler http.Handler, middlewares ...Middleware) http.Handler {
 
-	n := handler
+	h := handler
 	for _, middleware := range middlewares {
-		n = middleware(n)
+		h = middleware(h)
 	}
 
 	for _, globalMiddleware := range mngr.globalMiddleware {
-		n = globalMiddleware(n)
+		h = globalMiddleware(h)
 	}
-	return n
+	return h
+}
 
+func (mngr *Manager) WrapMux(handler http.Handler) http.Handler {
+
+	h := handler
+	for _, middleware := range mngr.globalMiddleware {
+		h = middleware(h)
+	}
+
+	return h
 }
