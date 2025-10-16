@@ -2,17 +2,21 @@ package cmd
 
 import (
 	"fmt"
-	"go.mod/global_router"
-	"go.mod/handlers"
 	"net/http"
+
+	"go.mod/global_router"
+	"go.mod/middleware"
 )
 
 func Serve() {
+	manager := middleware.NewManager()
 	mux := http.NewServeMux()
 
-	mux.Handle("GET /products", http.HandlerFunc(handlers.GetProducts))
-	mux.Handle("POST /products", http.HandlerFunc(handlers.CreateProduct))
-	mux.Handle("GET /products/{id}", http.HandlerFunc(handlers.GetProductById))
+	manager.Use(
+		middleware.Logger,
+		middleware.Beauty,
+	)
+	initRoutes(mux, manager)
 
 	fmt.Println("Server is running on port 3000")
 
