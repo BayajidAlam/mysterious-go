@@ -9,15 +9,21 @@ import (
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var newProduct database.Product
+	var newUser database.User
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&newProduct)
+	err := decoder.Decode(&newUser)
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Please give me a valid JSON", 400)
+		http.Error(w, "Invalid Request Data",
+			http.StatusBadRequest,
+		)
 		return
 	}
 
-	createdProduct := database.Store(newProduct)
-	utils.SendData(w, createdProduct, 201)
+	createdUser := newUser.Store()
+	utils.SendData(
+		w,
+		createdUser,
+		http.StatusCreated,
+	)
 }
