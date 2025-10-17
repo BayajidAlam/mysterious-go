@@ -12,5 +12,5 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendData(w, database.ProductList, 200)
+	utils.SendData(w, database.List(), 200)
 }
