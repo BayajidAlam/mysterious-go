@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"go.mod/utils"
 )
 
-func GetProductById(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetProductById(w http.ResponseWriter, r *http.Request) {
 	productID := r.PathValue("id")
 
 	pID, err := strconv.Atoi(productID)
@@ -16,7 +16,7 @@ func GetProductById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Please provide a valid ID", 400)
 		return
 	}
-	
+
 	product := database.Get(pID)
 	if product == nil {
 		utils.SendError(w, 404, "Product not found!")

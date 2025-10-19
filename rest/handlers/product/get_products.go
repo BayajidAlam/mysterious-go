@@ -1,4 +1,4 @@
-package handlers
+package product
 
 import (
 	"go.mod/database"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func GetProducts(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "GET" {
 		return

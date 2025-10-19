@@ -7,10 +7,31 @@ import (
 	"strconv"
 
 	"go.mod/config"
+	"go.mod/rest/handlers/product"
+	"go.mod/rest/handlers/user"
 	middleware "go.mod/rest/middlewares"
 )
 
-func Start(cnf config.Config) {
+type Server struct {
+	cnf            config.Config
+	productHandler *product.Handler
+	userHandler    *user.Handler
+}
+
+func NewServer(
+	cnf config.Config,
+	productHandler *product.Handler,
+	userHandler *user.Handler,
+
+) *Server {
+	return &Server{
+		cnf:            cnf,
+		productHandler: productHandler,
+		userHandler:    userHandler,
+	}
+}
+
+func (server *Server) Start() {
 
 	manager := middleware.NewManager()
 	manager.Use(
@@ -24,9 +45,10 @@ func Start(cnf config.Config) {
 		mux,
 	)
 
-	initRoutes(mux, manager)
+	server.productHandler.RegisterRoutes(mux, manager)
+	server.userHandler.RegisterRoutes(mux, manager)
 
-	addr := ": " + strconv.Itoa(cnf.HttpPort)
+	addr := ": " + strconv.Itoa(server.cnf.HttpPort)
 	fmt.Println("Server is running on port", addr)
 
 	err := http.ListenAndServe(addr, wrappedMux)

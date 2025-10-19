@@ -1,20 +1,20 @@
-package rest
+package product
 
 import (
 	"net/http"
 
-	"go.mod/rest/handlers"
 	middleware "go.mod/rest/middlewares"
 )
 
-func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
+func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 	//Get All Products
 	mux.Handle(
 		"GET /products",
 		manager.With(
 			http.HandlerFunc(
-				handlers.GetProducts,
+				h.GetProducts,
 			),
+			middleware.AuthenticateJWT,
 		))
 
 	//Add A Product
@@ -22,7 +22,7 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"POST /products",
 		manager.With(
 			http.HandlerFunc(
-				handlers.CreateProduct,
+				h.CreateProduct,
 			),
 		))
 
@@ -31,7 +31,7 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"GET /products/{id}",
 		manager.With(
 			http.HandlerFunc(
-				handlers.GetProductById,
+				h.GetProductById,
 			),
 		))
 
@@ -40,7 +40,7 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"PUT /products/{id}",
 		manager.With(
 			http.HandlerFunc(
-				handlers.UpdateProduct,
+				h.UpdateProduct,
 			),
 		))
 
@@ -49,25 +49,7 @@ func initRoutes(mux *http.ServeMux, manager *middleware.Manager) {
 		"DELETE /products/{id}",
 		manager.With(
 			http.HandlerFunc(
-				handlers.DeleteProduct,
-			),
-		))
-
-	//Add A Product
-	mux.Handle(
-		"POST /users",
-		manager.With(
-			http.HandlerFunc(
-				handlers.CreateUser,
-			),
-		))
-
-		//Add A Product
-	mux.Handle(
-		"POST /login",
-		manager.With(
-			http.HandlerFunc(
-				handlers.LoginUser,
+				h.DeleteProduct,
 			),
 		))
 }
