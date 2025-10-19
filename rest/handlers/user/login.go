@@ -1,11 +1,13 @@
-package handlers
+package user
 
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
+	"go.mod/config"
 	"go.mod/database"
 	"go.mod/utils"
-	"net/http"
 )
 
 type ReqLogin struct {
@@ -13,7 +15,7 @@ type ReqLogin struct {
 	Password string `json:"password"`
 }
 
-func LoginUser(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	var reqLogin ReqLogin
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&reqLogin)
@@ -30,7 +32,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		reqLogin.Password,
 	)
 
-	fmt.Println(usr,"user")
+	fmt.Println(usr, "user")
 
 	if usr == nil {
 		http.Error(
@@ -41,9 +43,26 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cnf := config.GetConfig()
+
+	accessToken, err := utils.CreateJwt(cnf.JwtSecretKey, utils.Payload{
+		Sub:       usr.ID,
+		FirstName: usr.FirstName,
+		LastName:  usr.LastName,
+	})
+
+	if err != nil {
+		http.Error(
+			w,
+			"Internal Server Error",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
 	utils.SendData(
 		w,
-		usr,
+		accessToken,
 		http.StatusCreated,
 	)
 }
