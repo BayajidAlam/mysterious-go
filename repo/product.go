@@ -1,10 +1,19 @@
 package repo
 
+import (
+	"database/sql"
+	"time"
+
+	"github.com/jmoiron/sqlx"
+)
+
 type Product struct {
-	ID          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	ImageUrl    string `json:"imageUrl"`
+	ID          int       `json:"id" db:"id"`
+	Title       string    `json:"title" db:"title"`
+	Description string    `json:"description" db:"description"`
+	ImageUrl    string    `json:"imageUrl" db:"image_url"`
+	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
 }
 
 type ProductRepo interface {
@@ -16,75 +25,125 @@ type ProductRepo interface {
 }
 
 type productRepo struct {
-	productList []*Product
+	db sqlx.DB
 }
 
-func NewProductRepo() ProductRepo {
-	repo := &productRepo{}
-	GenerateInitialProducts(repo)
-	return repo
+func NewProductRepo(db sqlx.DB) ProductRepo {
+	return &productRepo{
+		db: db,
+	}
 }
 
 func (r *productRepo) Create(pr Product) (*Product, error) {
-	pr.ID = len(r.productList) + 1
-	r.productList = append(r.productList, &pr)
+	query := `
+		INSERT INTO products (
+			title, 
+			description, 
+			image_url
+		)
+		VALUES (
+			:title, 
+			:description, 
+			:image_url
+		)
+		RETURNING id, created_at, updated_at
+	`
+
+	rows, err := r.db.NamedQuery(query, pr)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(&pr.ID, &pr.CreatedAt, &pr.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &pr, nil
 }
 
 func (r *productRepo) Get(productID int) (*Product, error) {
-	for _, product := range r.productList {
-		if product.ID == productID {
-			return product, nil
+	var product Product
+
+	query := `
+		SELECT id, 
+		title, 
+		description, 
+		image_url, 
+		created_at, 
+		updated_at
+		FROM products
+		WHERE id = $1
+		LIMIT 1
+	`
+
+	err := r.db.Get(&product, query, productID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
+		return nil, err
 	}
-	return nil, nil
+
+	return &product, nil
 }
 
 func (r *productRepo) List() ([]*Product, error) {
-	return r.productList, nil
-}
+	var products []*Product
 
-func (r *productRepo) Delete(productId int) error {
-	var tmpList []*Product
-	for _, product := range r.productList {
-		if product.ID != productId {
-			tmpList = append(tmpList, product)
-		}
+	query := `
+		SELECT id, title, description, image_url, created_at, updated_at
+		FROM products
+		ORDER BY id
+	`
+
+	err := r.db.Select(&products, query)
+	if err != nil {
+		return nil, err
 	}
-	r.productList = tmpList
 
-	return nil
+	return products, nil
 }
 
 func (r *productRepo) Update(pr Product) (*Product, error) {
-	for idx, product := range r.productList {
-		if product.ID == pr.ID {
-			r.productList[idx] = &pr
-		}
+	query := `
+		UPDATE products
+		SET
+			title = :title,
+			description = :description,
+			image_url = :image_url,
+			updated_at = CURRENT_TIMESTAMP
+		WHERE id = :id
+		RETURNING id, title, description, image_url, created_at, updated_at
+	`
+
+	stmt, err := r.db.PrepareNamed(query)
+	if err != nil {
+		return nil, err
 	}
 
-	return &pr, nil
+	var updated Product
+	err = stmt.Get(&updated, pr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &updated, nil
 }
 
-func GenerateInitialProducts(r *productRepo) {
-	r.productList = append(r.productList,
-		&Product{
-			ID:          1,
-			Title:       "Laptop",
-			Description: "A high performance laptop",
-			ImageUrl:    "https://example.com/laptop.jpg",
-		},
-		&Product{
-			ID:          2,
-			Title:       "Smartphone",
-			Description: "Latest model smartphone",
-			ImageUrl:    "https://example.com/smartphone.jpg",
-		},
-		&Product{
-			ID:          3,
-			Title:       "Headphones",
-			Description: "Noise cancelling headphones",
-			ImageUrl:    "https://example.com/headphones.jpg",
-		},
-	)
+func (r *productRepo) Delete(productId int) error {
+	query := `
+		DELETE FROM products
+		WHERE id = $1
+	`
+
+	_, err := r.db.Exec(query, productId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
