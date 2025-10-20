@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"go.mod/config"
+	"go.mod/repo"
 	"go.mod/rest"
 	"go.mod/rest/handlers/product"
 	"go.mod/rest/handlers/user"
@@ -11,11 +12,13 @@ import (
 func Serve() {
 	cnf := config.GetConfig()
 
-	// create middleware instance using the constructor
+	productRepo := repo.NewProductRepo()
+	userRepo := repo.NewUserRepo()
+
 	middlewares := middleware.NewMiddleware(cnf)
 
-	productHandler := product.NewHandler(middlewares)
-	userHandler := user.NewHandler()
+	productHandler := product.NewHandler(middlewares, productRepo)
+	userHandler := user.NewHandler(cnf, userRepo)
 
 	server := rest.NewServer(
 		cnf,

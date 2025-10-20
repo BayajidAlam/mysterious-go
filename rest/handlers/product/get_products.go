@@ -1,9 +1,9 @@
 package product
 
 import (
-	"go.mod/database"
-	"go.mod/utils"
 	"net/http"
+
+	"go.mod/utils"
 )
 
 func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
@@ -12,5 +12,11 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendData(w, database.List(), 200)
+	products, err := h.productRepo.List()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendData(w, products, 200)
 }

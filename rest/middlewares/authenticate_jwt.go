@@ -34,7 +34,7 @@ func (m *Middlewares) AuthenticateJWT(next http.Handler) http.Handler {
 		accessToken := headerArr[1]
 
 		tokenPart := strings.Split(accessToken, ".")
-		if len(headerArr) != 3 {
+		if len(tokenPart) != 3 {
 			http.Error(
 				w,
 				"Unauthorized",
@@ -48,7 +48,6 @@ func (m *Middlewares) AuthenticateJWT(next http.Handler) http.Handler {
 		jwtSignature := tokenPart[2]
 
 		message := jwtHeader + "." + jwtPayload
-
 
 		byteArrSecret := []byte(m.cnf.JwtSecretKey)
 		byteArrMessage := []byte(message)

@@ -3,22 +3,48 @@ package product
 import (
 	"encoding/json"
 	"fmt"
-	"go.mod/database"
-	"go.mod/utils"
 	"net/http"
+
+	"go.mod/repo"
+	"go.mod/utils"
 )
+
+type RequestCreateProduct struct {
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ImageUrl    string `json:"imageUrl"`
+}
 
 func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
-	var newProduct database.Product
+	var req RequestCreateProduct
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&newProduct)
+	err := decoder.Decode(&req)
 	if err != nil {
 		fmt.Println(err)
-		http.Error(w, "Please give me a valid JSON", 400)
+		http.Error(
+			w,
+			"Please give me a valid JSON",
+			400,
+		)
 		return
 	}
 
-	createdProduct := database.Store(newProduct)
+	createdProduct, err := h.productRepo.Create(repo.Product{
+		Title:       req.Title,
+		Description: req.Description,
+		ImageUrl:    req.ImageUrl,
+	})
+	if err != nil {
+		fmt.Println(err)
+		http.Error(
+			w,
+			"Internal server error",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
 	utils.SendData(w, createdProduct, 201)
 }
