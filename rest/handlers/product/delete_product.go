@@ -1,10 +1,10 @@
 package product
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
-	"go.mod/database"
 	"go.mod/utils"
 )
 
@@ -17,8 +17,17 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	database.Delete(pID)
-
+	err = h.svc.Delete(pID)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(
+			w,
+			"Internal server error",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	
 	utils.SendData(
 		w,
 		"Product deleted successfully",

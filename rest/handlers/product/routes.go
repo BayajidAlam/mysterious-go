@@ -14,7 +14,6 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middleware.Manager
 			http.HandlerFunc(
 				h.GetProducts,
 			),
-			middleware.AuthenticateJWT,
 		))
 
 	//Add A Product
@@ -24,6 +23,7 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux, manager *middleware.Manager
 			http.HandlerFunc(
 				h.CreateProduct,
 			),
+			h.middlewares.AuthenticateJWT,
 		))
 
 	//Get A Product

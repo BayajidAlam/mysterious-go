@@ -1,7 +1,17 @@
 package user
 
-type Handler struct{}
+import (
+	"go.mod/config"
+)
 
-func NewHandler() *Handler {
-	return &Handler{}
+type Handler struct {
+	cnf *config.Config
+	svc Service
+}
+
+func NewHandler(cnf *config.Config, svc Service) *Handler {
+	return &Handler{
+		cnf: cnf,
+		svc: svc,
+	}
 }

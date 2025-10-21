@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mod/config"
-	"go.mod/database"
 	"go.mod/utils"
 )
 
@@ -27,12 +25,10 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr := database.Find(
+	usr, err := h.svc.Get(
 		reqLogin.Email,
 		reqLogin.Password,
 	)
-
-	fmt.Println(usr, "user")
 
 	if usr == nil {
 		http.Error(
@@ -43,9 +39,7 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cnf := config.GetConfig()
-
-	accessToken, err := utils.CreateJwt(cnf.JwtSecretKey, utils.Payload{
+	accessToken, err := utils.CreateJwt(h.cnf.JwtSecretKey, utils.Payload{
 		Sub:       usr.ID,
 		FirstName: usr.FirstName,
 		LastName:  usr.LastName,
