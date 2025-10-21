@@ -25,7 +25,7 @@ func (h *Handler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usr, err := h.userRepo.Get(
+	usr, err := h.svc.Get(
 		reqLogin.Email,
 		reqLogin.Password,
 	)

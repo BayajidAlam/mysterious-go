@@ -2,26 +2,14 @@ package repo
 
 import (
 	"database/sql"
-	"time"
 
 	"github.com/jmoiron/sqlx"
+	"go.mod/domain"
+	"go.mod/product"
 )
 
-type Product struct {
-	ID          int       `json:"id" db:"id"`
-	Title       string    `json:"title" db:"title"`
-	Description string    `json:"description" db:"description"`
-	ImageUrl    string    `json:"imageUrl" db:"image_url"`
-	CreatedAt   time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at"`
-}
-
 type ProductRepo interface {
-	Create(Product) (*Product, error)
-	Get(productID int) (*Product, error)
-	List() ([]*Product, error)
-	Delete(productId int) error
-	Update(Product) (*Product, error)
+	product.ProductRepo
 }
 
 type productRepo struct {
@@ -34,7 +22,7 @@ func NewProductRepo(db sqlx.DB) ProductRepo {
 	}
 }
 
-func (r *productRepo) Create(pr Product) (*Product, error) {
+func (r *productRepo) Create(pr domain.Product) (*domain.Product, error) {
 	query := `
 		INSERT INTO products (
 			title, 
@@ -65,8 +53,8 @@ func (r *productRepo) Create(pr Product) (*Product, error) {
 	return &pr, nil
 }
 
-func (r *productRepo) Get(productID int) (*Product, error) {
-	var product Product
+func (r *productRepo) Get(productID int) (*domain.Product, error) {
+	var product domain.Product
 
 	query := `
 		SELECT id, 
@@ -91,8 +79,8 @@ func (r *productRepo) Get(productID int) (*Product, error) {
 	return &product, nil
 }
 
-func (r *productRepo) List() ([]*Product, error) {
-	var products []*Product
+func (r *productRepo) List() ([]*domain.Product, error) {
+	var products []*domain.Product
 
 	query := `
 		SELECT id, title, description, image_url, created_at, updated_at
@@ -108,7 +96,7 @@ func (r *productRepo) List() ([]*Product, error) {
 	return products, nil
 }
 
-func (r *productRepo) Update(pr Product) (*Product, error) {
+func (r *productRepo) Update(pr domain.Product) (*domain.Product, error) {
 	query := `
 		UPDATE products
 		SET
@@ -125,7 +113,7 @@ func (r *productRepo) Update(pr Product) (*Product, error) {
 		return nil, err
 	}
 
-	var updated Product
+	var updated domain.Product
 	err = stmt.Get(&updated, pr)
 	if err != nil {
 		return nil, err

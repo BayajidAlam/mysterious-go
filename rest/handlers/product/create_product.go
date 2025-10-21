@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"go.mod/repo"
+	"go.mod/domain"
 	"go.mod/utils"
 )
 
@@ -31,7 +31,7 @@ func (h *Handler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdProduct, err := h.productRepo.Create(repo.Product{
+	createdProduct, err := h.svc.Create(domain.Product{
 		Title:       req.Title,
 		Description: req.Description,
 		ImageUrl:    req.ImageUrl,
