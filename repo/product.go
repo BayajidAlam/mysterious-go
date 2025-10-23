@@ -79,21 +79,40 @@ func (r *productRepo) Get(productID int) (*domain.Product, error) {
 	return &product, nil
 }
 
-func (r *productRepo) List() ([]*domain.Product, error) {
+func (r *productRepo) List(page, limit int64) ([]*domain.Product, error) {
 	var products []*domain.Product
+
+	offset := ((page - 1) * limit) + 1
 
 	query := `
 		SELECT id, title, description, image_url, created_at, updated_at
 		FROM products
 		ORDER BY id
+		LIMIT $1 OFFSET $2
 	`
 
-	err := r.db.Select(&products, query)
+	err := r.db.Select(&products, query, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
 	return products, nil
+}
+
+func (r *productRepo) Count() (int64, error) {
+	var count int64
+
+	query := `
+		SELECT COUNT(*) 
+		FROM products
+	`
+
+	err := r.db.Get(&count, query)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 func (r *productRepo) Update(pr domain.Product) (*domain.Product, error) {
