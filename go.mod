@@ -10,5 +10,8 @@ require (
 
 require (
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
+	github.com/rakyll/hey v0.1.4 // indirect
 	github.com/rubenv/sql-migrate v1.8.0 // indirect
+	golang.org/x/net v0.0.0-20181017193950-04a2e542c03f // indirect
+	golang.org/x/text v0.3.0 // indirect
 )
